@@ -1,7 +1,7 @@
 ---
 type: "pages/prompts"
 title: "AI Prompts"
-url: "pages/prompts"
+url: "/pages/prompts/"
 prompts:
   - category: "HTML & Accessibility"
     items:
