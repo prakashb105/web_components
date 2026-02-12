@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Prompts — Prompt Library</title>
+    <style>
+        *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+
+        :root{
+            --bg:#0e0e10;
+            --surface:#18181b;
+            --surface-hover:#1f1f23;
+            --border:#27272a;
+            --text:#fafafa;
+            --text-muted:#a1a1aa;
+            --accent:#3b82f6;
+            --accent-light:#60a5fa;
+            --radius:10px;
+            --font:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,sans-serif;
+            --mono:'SF Mono',SFMono-Regular,ui-monospace,'Cascadia Code',Menlo,monospace;
+        }
+
+        body{
+            font-family:var(--font);
+            background:var(--bg);
+            color:var(--text);
+            line-height:1.6;
+            min-height:100vh;
+        }
+
+         
+        .prompt-header{
+            padding:3rem 1.5rem 2rem;
+            text-align:center;
+            border-bottom:1px solid var(--border);
+        }
+        .prompt-header h1{
+            font-size:2rem;
+            font-weight:700;
+            letter-spacing:-0.02em;
+        }
+        .prompt-header p{
+            color:var(--text-muted);
+            margin-top:.5rem;
+            font-size:.95rem;
+        }
+
+         
+        .search-wrap{
+            max-width:480px;
+            margin:1.5rem auto 0;
+            position:relative;
+        }
+        .search-wrap svg{
+            position:absolute;
+            left:14px;
+            top:50%;
+            transform:translateY(-50%);
+            color:var(--text-muted);
+            pointer-events:none;
+        }
+        #promptSearch{
+            width:100%;
+            padding:.7rem 1rem .7rem 2.6rem;
+            border:1px solid var(--border);
+            border-radius:var(--radius);
+            background:var(--surface);
+            color:var(--text);
+            font-size:.9rem;
+            font-family:var(--font);
+            outline:none;
+            transition:border-color .2s;
+        }
+        #promptSearch:focus{
+            border-color:var(--accent-light);
+        }
+
+         
+        .cat-nav{
+            display:flex;
+            gap:.5rem;
+            padding:1.25rem 1.5rem;
+            overflow-x:auto;
+            justify-content:center;
+            flex-wrap:wrap;
+            border-bottom:1px solid var(--border);
+        }
+        .cat-nav button{
+            padding:.4rem .9rem;
+            border:1px solid var(--border);
+            border-radius:20px;
+            background:transparent;
+            color:var(--text-muted);
+            font-size:.8rem;
+            font-family:var(--font);
+            cursor:pointer;
+            white-space:nowrap;
+            transition:all .2s;
+        }
+        .cat-nav button:hover,
+        .cat-nav button[aria-pressed="true"]{
+            background:var(--accent);
+            border-color:var(--accent);
+            color:#fff;
+        }
+
+         
+        .prompt-container{
+            max-width:1200px;
+            margin:0 auto;
+            padding:2rem 1.5rem 4rem;
+        }
+
+        .category-section{
+            margin-bottom:2.5rem;
+        }
+        .category-title{
+            font-size:1.1rem;
+            font-weight:600;
+            color:var(--accent-light);
+            margin-bottom:1rem;
+            padding-bottom:.5rem;
+            border-bottom:1px solid var(--border);
+            display:flex;
+            align-items:center;
+            gap:.5rem;
+        }
+        .category-title .count{
+            font-size:.75rem;
+            background:var(--surface);
+            border:1px solid var(--border);
+            padding:0 .5rem;
+            border-radius:10px;
+            color:var(--text-muted);
+            font-weight:400;
+        }
+
+        .prompt-grid{
+            display:grid;
+            grid-template-columns:repeat(auto-fill,minmax(340px,1fr));
+            gap:1rem;
+        }
+
+         
+        .prompt-card{
+            background:var(--surface);
+            border:1px solid var(--border);
+            border-radius:var(--radius);
+            padding:1.25rem;
+            display:flex;
+            flex-direction:column;
+            transition:border-color .2s,transform .15s;
+            position:relative;
+        }
+        .prompt-card:hover{
+            border-color:var(--accent-light);
+            transform:translateY(-2px);
+        }
+        .prompt-card__title{
+            font-size:.95rem;
+            font-weight:600;
+            margin-bottom:.6rem;
+        }
+        .prompt-card__text{
+            font-size:.82rem;
+            color:var(--text-muted);
+            line-height:1.65;
+            flex:1;
+            font-family:var(--mono);
+            white-space:pre-wrap;
+            word-break:break-word;
+        }
+        .prompt-card__actions{
+            display:flex;
+            gap:.5rem;
+            margin-top:1rem;
+            justify-content:flex-end;
+        }
+        .btn-copy{
+            display:inline-flex;
+            align-items:center;
+            gap:.35rem;
+            padding:.4rem .75rem;
+            border:1px solid var(--border);
+            border-radius:6px;
+            background:transparent;
+            color:var(--text-muted);
+            font-size:.78rem;
+            font-family:var(--font);
+            cursor:pointer;
+            transition:all .2s;
+        }
+        .btn-copy:hover{
+            background:var(--accent);
+            border-color:var(--accent);
+            color:#fff;
+        }
+        .btn-copy.copied{
+            background:#16a34a;
+            border-color:#16a34a;
+            color:#fff;
+        }
+
+         
+        .no-results{
+            text-align:center;
+            padding:3rem 1rem;
+            color:var(--text-muted);
+            display:none;
+        }
+
+         
+        .toast{
+            position:fixed;
+            bottom:2rem;
+            left:50%;
+            transform:translateX(-50%) translateY(100px);
+            background:var(--accent);
+            color:#fff;
+            padding:.6rem 1.25rem;
+            border-radius:var(--radius);
+            font-size:.85rem;
+            opacity:0;
+            transition:all .3s ease;
+            pointer-events:none;
+            z-index:100;
+        }
+        .toast.show{
+            transform:translateX(-50%) translateY(0);
+            opacity:1;
+        }
+
+        @media(max-width:600px){
+            .prompt-grid{grid-template-columns:1fr}
+            .prompt-header h1{font-size:1.5rem}
+            .cat-nav{justify-content:flex-start}
+        }
+    </style>
+</head>
+<body>
+
+    <header class="prompt-header" role="banner">
+        <h1 aria-label="AI Prompt Library">AI Prompts</h1>
+        <p>Curated prompts for web development — click to copy.</p>
+        <div class="search-wrap">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
+            </svg>
+            <input type="search" id="promptSearch" placeholder="Search prompts…"
+                   aria-label="Search prompts" autocomplete="off" />
+        </div>
+    </header>
+
+    <nav class="cat-nav" aria-label="Prompt categories">
+        <button type="button" data-cat="all" aria-pressed="true">All</button>
+        
+        <button type="button" data-cat="html-accessibility" aria-pressed="false">HTML &amp; Accessibility</button>
+        
+        <button type="button" data-cat="css-styling" aria-pressed="false">CSS &amp; Styling</button>
+        
+        <button type="button" data-cat="javascript" aria-pressed="false">JavaScript</button>
+        
+        <button type="button" data-cat="react-frameworks" aria-pressed="false">React &amp; Frameworks</button>
+        
+        <button type="button" data-cat="testing" aria-pressed="false">Testing</button>
+        
+        <button type="button" data-cat="code-review-refactoring" aria-pressed="false">Code Review &amp; Refactoring</button>
+        
+        <button type="button" data-cat="mr-code-review" aria-pressed="false">MR &amp; Code Review</button>
+        
+    </nav>
+
+    <main class="prompt-container" role="main">
+        
+        <section class="category-section" data-category="html-accessibility" aria-label="HTML &amp; Accessibility prompts">
+            <h2 class="category-title">
+                HTML &amp; Accessibility
+                <span class="count">3</span>
+            </h2>
+            <div class="prompt-grid" role="list">
+                
+                <article class="prompt-card" role="listitem" data-title="semantic html review" data-prompt="Review the following HTML and refactor it to use proper semantic elements (header, nav, main, section, article, aside, footer). Ensure all images have descriptive alt text, all form inputs have associated labels, and ARIA attributes are used where necessary.">
+                    <h3 class="prompt-card__title">Semantic HTML Review</h3>
+                    <p class="prompt-card__text">Review the following HTML and refactor it to use proper semantic elements (header, nav, main, section, article, aside, footer). Ensure all images have descriptive alt text, all form inputs have associated labels, and ARIA attributes are used where necessary.</p>
+                    <div class="prompt-card__actions">
+                        <button class="btn-copy" type="button"
+                                aria-label="Copy prompt: Semantic HTML Review"
+                                data-clipboard="Review the following HTML and refactor it to use proper semantic elements (header, nav, main, section, article, aside, footer). Ensure all images have descriptive alt text, all form inputs have associated labels, and ARIA attributes are used where necessary.">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                 stroke-linejoin="round" aria-hidden="true">
+                                <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
+                                <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+                            </svg>
+                            Copy
+                        </button>
+                    </div>
+                </article>
+                
+                <article class="prompt-card" role="listitem" data-title="accessibility audit" data-prompt="Audit this webpage code for WCAG 2.1 AA compliance. Check for color contrast issues, missing alt text, keyboard navigation problems, missing ARIA roles/labels, and focus management. Provide a prioritized list of fixes.">
+                    <h3 class="prompt-card__title">Accessibility Audit</h3>
+                    <p class="prompt-card__text">Audit this webpage code for WCAG 2.1 AA compliance. Check for color contrast issues, missing alt text, keyboard navigation problems, missing ARIA roles/labels, and focus management. Provide a prioritized list of fixes.</p>
+                    <div class="prompt-card__actions">
+                        <button class="btn-copy" type="button"
+                                aria-label="Copy prompt: Accessibility Audit"
+                                data-clipboard="Audit this webpage code for WCAG 2.1 AA compliance. Check for color contrast issues, missing alt text, keyboard navigation problems, missing ARIA roles/labels, and focus management. Provide a prioritized list of fixes.">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                 stroke-linejoin="round" aria-hidden="true">
+                                <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
+                                <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+                            </svg>
+                            Copy
+                        </button>
+                    </div>
+                </article>
+                
+                <article class="prompt-card" role="listitem" data-title="meta tags &amp; seo" data-prompt="Generate a complete set of meta tags for a webpage about [TOPIC]. Include Open Graph tags, Twitter Card tags, canonical URL, description, viewport, charset, and any structured data (JSON-LD) that would be appropriate.">
+                    <h3 class="prompt-card__title">Meta Tags &amp; SEO</h3>
+                    <p class="prompt-card__text">Generate a complete set of meta tags for a webpage about [TOPIC]. Include Open Graph tags, Twitter Card tags, canonical URL, description, viewport, charset, and any structured data (JSON-LD) that would be appropriate.</p>
+                    <div class="prompt-card__actions">
+                        <button class="btn-copy" type="button"
+                                aria-label="Copy prompt: Meta Tags &amp; SEO"
+                                data-clipboard="Generate a complete set of meta tags for a webpage about [TOPIC]. Include Open Graph tags, Twitter Card tags, canonical URL, description, viewport, charset, and any structured data (JSON-LD) that would be appropriate.">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                 stroke-linejoin="round" aria-hidden="true">
+                                <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
+                                <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+                            </svg>
+                            Copy
+                        </button>
+                    </div>
+                </article>
+                
+            </div>
+        </section>
+        
+        <section class="category-section" data-category="css-styling" aria-label="CSS &amp; Styling prompts">
+            <h2 class="category-title">
+                CSS &amp; Styling
+                <span class="count">4</span>
+            </h2>
+            <div class="prompt-grid" role="list">
+                
+                <article class="prompt-card" role="listitem" data-title="responsive layout" data-prompt="Create a responsive CSS Grid layout for a dashboard with a sidebar, header, main content area, and footer. It should collapse to a single column on mobile (&lt;768px), show a collapsible sidebar on tablet (768px–1024px), and the full layout on desktop. Use CSS custom properties for spacing and colors.">
+                    <h3 class="prompt-card__title">Responsive Layout</h3>
+                    <p class="prompt-card__text">Create a responsive CSS Grid layout for a dashboard with a sidebar, header, main content area, and footer. It should collapse to a single column on mobile (&lt;768px), show a collapsible sidebar on tablet (768px–1024px), and the full layout on desktop. Use CSS custom properties for spacing and colors.</p>
+                    <div class="prompt-card__actions">
+                        <button class="btn-copy" type="button"
+                                aria-label="Copy prompt: Responsive Layout"
+                                data-clipboard="Create a responsive CSS Grid layout for a dashboard with a sidebar, header, main content area, and footer. It should collapse to a single column on mobile (&lt;768px), show a collapsible sidebar on tablet (768px–1024px), and the full layout on desktop. Use CSS custom properties for spacing and colors.">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                 stroke-linejoin="round" aria-hidden="true">
+                                <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
+                                <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+                            </svg>
+                            Copy
+                        </button>
+                    </div>
+                </article>
+                
+                <article class="prompt-card" role="listitem" data-title="dark mode toggle" data-prompt="Implement a CSS dark mode system using CSS custom properties and prefers-color-scheme media query. Include a toggle button that saves the user&#39;s preference to localStorage and respects their OS-level setting as the default.">
+                    <h3 class="prompt-card__title">Dark Mode Toggle</h3>
+                    <p class="prompt-card__text">Implement a CSS dark mode system using CSS custom properties and prefers-color-scheme media query. Include a toggle button that saves the user&rsquo;s preference to localStorage and respects their OS-level setting as the default.</p>
+                    <div class="prompt-card__actions">
+                        <button class="btn-copy" type="button"
+                                aria-label="Copy prompt: Dark Mode Toggle"
+                                data-clipboard="Implement a CSS dark mode system using CSS custom properties and prefers-color-scheme media query. Include a toggle button that saves the user&#39;s preference to localStorage and respects their OS-level setting as the default.">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                 stroke-linejoin="round" aria-hidden="true">
+                                <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
+                                <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+                            </svg>
+                            Copy
+                        </button>
+                    </div>
+                </article>
+                
+                <article class="prompt-card" role="listitem" data-title="animation &amp; transitions" data-prompt="Create a smooth page transition animation using CSS @keyframes for a single-page app feel. Include enter/exit animations for route changes, a loading skeleton screen, and staggered list item animations. Keep animations under 300ms and respect prefers-reduced-motion.">
+                    <h3 class="prompt-card__title">Animation &amp; Transitions</h3>
+                    <p class="prompt-card__text">Create a smooth page transition animation using CSS @keyframes for a single-page app feel. Include enter/exit animations for route changes, a loading skeleton screen, and staggered list item animations. Keep animations under 300ms and respect prefers-reduced-motion.</p>
+                    <div class="prompt-card__actions">
+                        <button class="btn-copy" type="button"
+                                aria-label="Copy prompt: Animation &amp; Transitions"
+                                data-clipboard="Create a smooth page transition animation using CSS @keyframes for a single-page app feel. Include enter/exit animations for route changes, a loading skeleton screen, and staggered list item animations. Keep animations under 300ms and respect prefers-reduced-motion.">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                 stroke-linejoin="round" aria-hidden="true">
+                                <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
+                                <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+                            </svg>
+                            Copy
+                        </button>
+                    </div>
+                </article>
+                
+                <article class="prompt-card" role="listitem" data-title="css architecture" data-prompt="Refactor this CSS file using BEM naming convention. Identify repeated values and extract them into CSS custom properties. Remove any unused selectors, reduce specificity issues, and organize rules by component.">
+                    <h3 class="prompt-card__title">CSS Architecture</h3>
+                    <p class="prompt-card__text">Refactor this CSS file using BEM naming convention. Identify repeated values and extract them into CSS custom properties. Remove any unused selectors, reduce specificity issues, and organize rules by component.</p>
+                    <div class="prompt-card__actions">
+                        <button class="btn-copy" type="button"
+                                aria-label="Copy prompt: CSS Architecture"
+                                data-clipboard="Refactor this CSS file using BEM naming convention. Identify repeated values and extract them into CSS custom properties. Remove any unused selectors, reduce specificity issues, and organize rules by component.">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                 stroke-linejoin="round" aria-hidden="true">
+                                <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
+                                <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+                            </svg>
+                            Copy
+                        </button>
+                    </div>
+                </article>
+                
+            </div>
+        </section>
+        
+        <section class="category-section" data-category="javascript" aria-label="JavaScript prompts">
+            <h2 class="category-title">
+                JavaScript
+                <span class="count">4</span>
+            </h2>
+            <div class="prompt-grid" role="list">
+                
+                <article class="prompt-card" role="listitem" data-title="debounce &amp; throttle" data-prompt="Write a production-ready debounce and throttle utility in vanilla JavaScript with TypeScript types. Include options for leading/trailing edge execution, cancel method, and flush method. Add JSDoc comments and unit test cases.">
+                    <h3 class="prompt-card__title">Debounce &amp; Throttle</h3>
+                    <p class="prompt-card__text">Write a production-ready debounce and throttle utility in vanilla JavaScript with TypeScript types. Include options for leading/trailing edge execution, cancel method, and flush method. Add JSDoc comments and unit test cases.</p>
+                    <div class="prompt-card__actions">
+                        <button class="btn-copy" type="button"
+                                aria-label="Copy prompt: Debounce &amp; Throttle"
+                                data-clipboard="Write a production-ready debounce and throttle utility in vanilla JavaScript with TypeScript types. Include options for leading/trailing edge execution, cancel method, and flush method. Add JSDoc comments and unit test cases.">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                 stroke-linejoin="round" aria-hidden="true">
+                                <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
+                                <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+                            </svg>
+                            Copy
+                        </button>
+                    </div>
+                </article>
+                
+                <article class="prompt-card" role="listitem" data-title="fetch wrapper" data-prompt="Create a reusable fetch API wrapper that handles: automatic JSON parsing, request/response interceptors, timeout support, retry logic with exponential backoff, abort controller integration, and typed error handling. Use TypeScript.">
+                    <h3 class="prompt-card__title">Fetch Wrapper</h3>
+                    <p class="prompt-card__text">Create a reusable fetch API wrapper that handles: automatic JSON parsing, request/response interceptors, timeout support, retry logic with exponential backoff, abort controller integration, and typed error handling. Use TypeScript.</p>
+                    <div class="prompt-card__actions">
+                        <button class="btn-copy" type="button"
+                                aria-label="Copy prompt: Fetch Wrapper"
+                                data-clipboard="Create a reusable fetch API wrapper that handles: automatic JSON parsing, request/response interceptors, timeout support, retry logic with exponential backoff, abort controller integration, and typed error handling. Use TypeScript.">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                 stroke-linejoin="round" aria-hidden="true">
+                                <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
+                                <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+                            </svg>
+                            Copy
+                        </button>
+                    </div>
+                </article>
+                
+                <article class="prompt-card" role="listitem" data-title="form validation" data-prompt="Build a lightweight form validation library in vanilla JS that supports: required fields, email/URL/phone patterns, min/max length, custom regex, async validation (e.g., checking username availability), and real-time inline error messages with proper ARIA attributes.">
+                    <h3 class="prompt-card__title">Form Validation</h3>
+                    <p class="prompt-card__text">Build a lightweight form validation library in vanilla JS that supports: required fields, email/URL/phone patterns, min/max length, custom regex, async validation (e.g., checking username availability), and real-time inline error messages with proper ARIA attributes.</p>
+                    <div class="prompt-card__actions">
+                        <button class="btn-copy" type="button"
+                                aria-label="Copy prompt: Form Validation"
+                                data-clipboard="Build a lightweight form validation library in vanilla JS that supports: required fields, email/URL/phone patterns, min/max length, custom regex, async validation (e.g., checking username availability), and real-time inline error messages with proper ARIA attributes.">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                 stroke-linejoin="round" aria-hidden="true">
+                                <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
+                                <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+                            </svg>
+                            Copy
+                        </button>
+                    </div>
+                </article>
+                
+                <article class="prompt-card" role="listitem" data-title="localstorage manager" data-prompt="Create a type-safe localStorage utility that handles: JSON serialization/deserialization, expiry/TTL support, storage quota detection, cross-tab synchronization via storage events, and a fallback to in-memory storage when localStorage is unavailable.">
+                    <h3 class="prompt-card__title">LocalStorage Manager</h3>
+                    <p class="prompt-card__text">Create a type-safe localStorage utility that handles: JSON serialization/deserialization, expiry/TTL support, storage quota detection, cross-tab synchronization via storage events, and a fallback to in-memory storage when localStorage is unavailable.</p>
+                    <div class="prompt-card__actions">
+                        <button class="btn-copy" type="button"
+                                aria-label="Copy prompt: LocalStorage Manager"
+                                data-clipboard="Create a type-safe localStorage utility that handles: JSON serialization/deserialization, expiry/TTL support, storage quota detection, cross-tab synchronization via storage events, and a fallback to in-memory storage when localStorage is unavailable.">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                 stroke-linejoin="round" aria-hidden="true">
+                                <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
+                                <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+                            </svg>
+                            Copy
+                        </button>
+                    </div>
+                </article>
+                
+            </div>
+        </section>
+        
+        <section class="category-section" data-category="react-frameworks" aria-label="React &amp; Frameworks prompts">
+            <h2 class="category-title">
+                React &amp; Frameworks
+                <span class="count">3</span>
+            </h2>
+            <div class="prompt-grid" role="list">
+                
+                <article class="prompt-card" role="listitem" data-title="custom hook" data-prompt="Create a custom React hook called useAsync that handles async operations with loading, error, and data states. Include support for: automatic execution on mount, manual trigger, cancellation on unmount, retry logic, and TypeScript generics for the return type.">
+                    <h3 class="prompt-card__title">Custom Hook</h3>
+                    <p class="prompt-card__text">Create a custom React hook called useAsync that handles async operations with loading, error, and data states. Include support for: automatic execution on mount, manual trigger, cancellation on unmount, retry logic, and TypeScript generics for the return type.</p>
+                    <div class="prompt-card__actions">
+                        <button class="btn-copy" type="button"
+                                aria-label="Copy prompt: Custom Hook"
+                                data-clipboard="Create a custom React hook called useAsync that handles async operations with loading, error, and data states. Include support for: automatic execution on mount, manual trigger, cancellation on unmount, retry logic, and TypeScript generics for the return type.">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                 stroke-linejoin="round" aria-hidden="true">
+                                <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
+                                <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+                            </svg>
+                            Copy
+                        </button>
+                    </div>
+                </article>
+                
+                <article class="prompt-card" role="listitem" data-title="component architecture" data-prompt="I have a large monolithic React component (pasted below). Refactor it by extracting logical pieces into smaller, reusable components. Apply the single responsibility principle, use composition over prop drilling, and suggest where to use context or custom hooks.">
+                    <h3 class="prompt-card__title">Component Architecture</h3>
+                    <p class="prompt-card__text">I have a large monolithic React component (pasted below). Refactor it by extracting logical pieces into smaller, reusable components. Apply the single responsibility principle, use composition over prop drilling, and suggest where to use context or custom hooks.</p>
+                    <div class="prompt-card__actions">
+                        <button class="btn-copy" type="button"
+                                aria-label="Copy prompt: Component Architecture"
+                                data-clipboard="I have a large monolithic React component (pasted below). Refactor it by extracting logical pieces into smaller, reusable components. Apply the single responsibility principle, use composition over prop drilling, and suggest where to use context or custom hooks.">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                 stroke-linejoin="round" aria-hidden="true">
+                                <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
+                                <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+                            </svg>
+                            Copy
+                        </button>
+                    </div>
+                </article>
+                
+                <article class="prompt-card" role="listitem" data-title="performance optimization" data-prompt="Analyze this React component for performance issues. Check for: unnecessary re-renders, missing memoization (useMemo/useCallback), large bundle imports that should be lazy-loaded, unoptimized images, and missing key props in lists. Provide before/after code.">
+                    <h3 class="prompt-card__title">Performance Optimization</h3>
+                    <p class="prompt-card__text">Analyze this React component for performance issues. Check for: unnecessary re-renders, missing memoization (useMemo/useCallback), large bundle imports that should be lazy-loaded, unoptimized images, and missing key props in lists. Provide before/after code.</p>
+                    <div class="prompt-card__actions">
+                        <button class="btn-copy" type="button"
+                                aria-label="Copy prompt: Performance Optimization"
+                                data-clipboard="Analyze this React component for performance issues. Check for: unnecessary re-renders, missing memoization (useMemo/useCallback), large bundle imports that should be lazy-loaded, unoptimized images, and missing key props in lists. Provide before/after code.">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                 stroke-linejoin="round" aria-hidden="true">
+                                <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
+                                <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+                            </svg>
+                            Copy
+                        </button>
+                    </div>
+                </article>
+                
+            </div>
+        </section>
+        
+        <section class="category-section" data-category="testing" aria-label="Testing prompts">
+            <h2 class="category-title">
+                Testing
+                <span class="count">2</span>
+            </h2>
+            <div class="prompt-grid" role="list">
+                
+                <article class="prompt-card" role="listitem" data-title="unit test generation" data-prompt="Generate comprehensive unit tests for the following function/component. Cover: happy path, edge cases (empty input, null, undefined, boundary values), error cases, and async behavior. Use [Jest/Vitest] with descriptive test names following the &#39;should... when...&#39; pattern.">
+                    <h3 class="prompt-card__title">Unit Test Generation</h3>
+                    <p class="prompt-card__text">Generate comprehensive unit tests for the following function/component. Cover: happy path, edge cases (empty input, null, undefined, boundary values), error cases, and async behavior. Use [Jest/Vitest] with descriptive test names following the &lsquo;should&hellip; when&hellip;&rsquo; pattern.</p>
+                    <div class="prompt-card__actions">
+                        <button class="btn-copy" type="button"
+                                aria-label="Copy prompt: Unit Test Generation"
+                                data-clipboard="Generate comprehensive unit tests for the following function/component. Cover: happy path, edge cases (empty input, null, undefined, boundary values), error cases, and async behavior. Use [Jest/Vitest] with descriptive test names following the &#39;should... when...&#39; pattern.">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                 stroke-linejoin="round" aria-hidden="true">
+                                <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
+                                <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+                            </svg>
+                            Copy
+                        </button>
+                    </div>
+                </article>
+                
+                <article class="prompt-card" role="listitem" data-title="e2e test scenario" data-prompt="Write Playwright end-to-end tests for a user login flow. Cover: successful login, invalid credentials, empty form submission, remember me functionality, redirect after login, and session expiry. Use Page Object Model pattern.">
+                    <h3 class="prompt-card__title">E2E Test Scenario</h3>
+                    <p class="prompt-card__text">Write Playwright end-to-end tests for a user login flow. Cover: successful login, invalid credentials, empty form submission, remember me functionality, redirect after login, and session expiry. Use Page Object Model pattern.</p>
+                    <div class="prompt-card__actions">
+                        <button class="btn-copy" type="button"
+                                aria-label="Copy prompt: E2E Test Scenario"
+                                data-clipboard="Write Playwright end-to-end tests for a user login flow. Cover: successful login, invalid credentials, empty form submission, remember me functionality, redirect after login, and session expiry. Use Page Object Model pattern.">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                 stroke-linejoin="round" aria-hidden="true">
+                                <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
+                                <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+                            </svg>
+                            Copy
+                        </button>
+                    </div>
+                </article>
+                
+            </div>
+        </section>
+        
+        <section class="category-section" data-category="code-review-refactoring" aria-label="Code Review &amp; Refactoring prompts">
+            <h2 class="category-title">
+                Code Review &amp; Refactoring
+                <span class="count">3</span>
+            </h2>
+            <div class="prompt-grid" role="list">
+                
+                <article class="prompt-card" role="listitem" data-title="code review checklist" data-prompt="Review this code for: security vulnerabilities (XSS, injection, CSRF), performance bottlenecks, memory leaks, error handling gaps, naming conventions, DRY violations, and adherence to SOLID principles. Rate severity (critical/major/minor) for each finding.">
+                    <h3 class="prompt-card__title">Code Review Checklist</h3>
+                    <p class="prompt-card__text">Review this code for: security vulnerabilities (XSS, injection, CSRF), performance bottlenecks, memory leaks, error handling gaps, naming conventions, DRY violations, and adherence to SOLID principles. Rate severity (critical/major/minor) for each finding.</p>
+                    <div class="prompt-card__actions">
+                        <button class="btn-copy" type="button"
+                                aria-label="Copy prompt: Code Review Checklist"
+                                data-clipboard="Review this code for: security vulnerabilities (XSS, injection, CSRF), performance bottlenecks, memory leaks, error handling gaps, naming conventions, DRY violations, and adherence to SOLID principles. Rate severity (critical/major/minor) for each finding.">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                 stroke-linejoin="round" aria-hidden="true">
+                                <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
+                                <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+                            </svg>
+                            Copy
+                        </button>
+                    </div>
+                </article>
+                
+                <article class="prompt-card" role="listitem" data-title="legacy code refactor" data-prompt="Refactor this legacy JavaScript code to modern ES2024&#43; standards. Replace var with const/let, convert callbacks to async/await, use optional chaining and nullish coalescing, replace lodash utilities with native methods where possible, and add TypeScript types.">
+                    <h3 class="prompt-card__title">Legacy Code Refactor</h3>
+                    <p class="prompt-card__text">Refactor this legacy JavaScript code to modern ES2024+ standards. Replace var with const/let, convert callbacks to async/await, use optional chaining and nullish coalescing, replace lodash utilities with native methods where possible, and add TypeScript types.</p>
+                    <div class="prompt-card__actions">
+                        <button class="btn-copy" type="button"
+                                aria-label="Copy prompt: Legacy Code Refactor"
+                                data-clipboard="Refactor this legacy JavaScript code to modern ES2024&#43; standards. Replace var with const/let, convert callbacks to async/await, use optional chaining and nullish coalescing, replace lodash utilities with native methods where possible, and add TypeScript types.">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                 stroke-linejoin="round" aria-hidden="true">
+                                <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
+                                <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+                            </svg>
+                            Copy
+                        </button>
+                    </div>
+                </article>
+                
+                <article class="prompt-card" role="listitem" data-title="regex generator" data-prompt="Write a well-commented regular expression that matches [PATTERN DESCRIPTION]. Include: the regex with named capture groups, a plain-English explanation of each part, 5 examples of strings that match, 5 examples that don&#39;t match, and edge cases to be aware of.">
+                    <h3 class="prompt-card__title">Regex Generator</h3>
+                    <p class="prompt-card__text">Write a well-commented regular expression that matches [PATTERN DESCRIPTION]. Include: the regex with named capture groups, a plain-English explanation of each part, 5 examples of strings that match, 5 examples that don&rsquo;t match, and edge cases to be aware of.</p>
+                    <div class="prompt-card__actions">
+                        <button class="btn-copy" type="button"
+                                aria-label="Copy prompt: Regex Generator"
+                                data-clipboard="Write a well-commented regular expression that matches [PATTERN DESCRIPTION]. Include: the regex with named capture groups, a plain-English explanation of each part, 5 examples of strings that match, 5 examples that don&#39;t match, and edge cases to be aware of.">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                 stroke-linejoin="round" aria-hidden="true">
+                                <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
+                                <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+                            </svg>
+                            Copy
+                        </button>
+                    </div>
+                </article>
+                
+            </div>
+        </section>
+        
+        <section class="category-section" data-category="mr-code-review" aria-label="MR &amp; Code Review prompts">
+            <h2 class="category-title">
+                MR &amp; Code Review
+                <span class="count">1</span>
+            </h2>
+            <div class="prompt-grid" role="list">
+                
+                <article class="prompt-card" role="listitem" data-title="mr description" data-prompt="Generate a clear and concise Merge Request (MR) description for the changes in @[file_path]. The output should include a short, technical title followed by a brief summary explaining what was changed and why (limit this to 3–4 sentences). Then describe the key modifications in a focused way, including small, relevant code snippets only where necessary to clarify non-trivial logic. Clearly mention any breaking changes, dependency updates, or impacts on performance, accessibility, or mobile usability. Conclude with how the changes were tested and any important edge cases that were validated. Keep the tone direct and technical, and avoid unnecessary detail or filler.">
+                    <h3 class="prompt-card__title">MR Description</h3>
+                    <p class="prompt-card__text">Generate a clear and concise Merge Request (MR) description for the changes in @[file_path]. The output should include a short, technical title followed by a brief summary explaining what was changed and why (limit this to 3–4 sentences). Then describe the key modifications in a focused way, including small, relevant code snippets only where necessary to clarify non-trivial logic. Clearly mention any breaking changes, dependency updates, or impacts on performance, accessibility, or mobile usability. Conclude with how the changes were tested and any important edge cases that were validated. Keep the tone direct and technical, and avoid unnecessary detail or filler.</p>
+                    <div class="prompt-card__actions">
+                        <button class="btn-copy" type="button"
+                                aria-label="Copy prompt: MR Description"
+                                data-clipboard="Generate a clear and concise Merge Request (MR) description for the changes in @[file_path]. The output should include a short, technical title followed by a brief summary explaining what was changed and why (limit this to 3–4 sentences). Then describe the key modifications in a focused way, including small, relevant code snippets only where necessary to clarify non-trivial logic. Clearly mention any breaking changes, dependency updates, or impacts on performance, accessibility, or mobile usability. Conclude with how the changes were tested and any important edge cases that were validated. Keep the tone direct and technical, and avoid unnecessary detail or filler.">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                 stroke-linejoin="round" aria-hidden="true">
+                                <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
+                                <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+                            </svg>
+                            Copy
+                        </button>
+                    </div>
+                </article>
+                
+            </div>
+        </section>
+        
+
+        <div class="no-results" role="status" aria-live="polite">
+            <p>No prompts match your search.</p>
+        </div>
+    </main>
+
+    <div class="toast" role="status" aria-live="polite">Copied to clipboard!</div>
+
+    <script>
+        (function(){
+            const searchInput  = document.getElementById('promptSearch');
+            const catButtons   = document.querySelectorAll('.cat-nav button');
+            const sections     = document.querySelectorAll('.category-section');
+            const cards        = document.querySelectorAll('.prompt-card');
+            const noResults    = document.querySelector('.no-results');
+            const toast        = document.querySelector('.toast');
+            let activeCat      = 'all';
+
+             
+            catButtons.forEach(function(btn){
+                btn.addEventListener('click', function(){
+                    catButtons.forEach(function(b){ b.setAttribute('aria-pressed','false'); });
+                    btn.setAttribute('aria-pressed','true');
+                    activeCat = btn.dataset.cat;
+                    filterPrompts();
+                });
+            });
+
+             
+            searchInput.addEventListener('input', filterPrompts);
+
+            function filterPrompts(){
+                const q = searchInput.value.toLowerCase().trim();
+                let visible = 0;
+
+                sections.forEach(function(sec){
+                    const catMatch = activeCat === 'all' || sec.dataset.category === activeCat;
+                    let sectionVisible = 0;
+
+                    sec.querySelectorAll('.prompt-card').forEach(function(card){
+                        const title  = card.dataset.title || '';
+                        const prompt = (card.dataset.prompt || '').toLowerCase();
+                        const match  = catMatch && (title.includes(q) || prompt.includes(q));
+                        card.style.display = match ? '' : 'none';
+                        if(match) sectionVisible++;
+                    });
+
+                    sec.style.display = sectionVisible > 0 ? '' : 'none';
+                    visible += sectionVisible;
+                });
+
+                noResults.style.display = visible === 0 ? 'block' : 'none';
+            }
+
+             
+            document.addEventListener('click', function(e){
+                const btn = e.target.closest('.btn-copy');
+                if(!btn) return;
+
+                const text = btn.dataset.clipboard;
+                navigator.clipboard.writeText(text).then(function(){
+                    btn.classList.add('copied');
+                    btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg> Copied!';
+                    showToast();
+
+                    setTimeout(function(){
+                        btn.classList.remove('copied');
+                        btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg> Copy';
+                    }, 2000);
+                });
+            });
+
+            function showToast(){
+                toast.classList.add('show');
+                setTimeout(function(){ toast.classList.remove('show'); }, 2000);
+            }
+        })();
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Powerful Enterprise – Scroll Driven</title>
+
+<style>
+ 
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: system-ui, sans-serif;
+}
+
+ 
+.spacer {
+  height: 100vh;
+  display: grid;
+  place-items: center;
+  font-size: 40px;
+  background: #f2f2f2;
+}
+
+ 
+.powerful-enterprise-wrapper {
+  height: 400vh;  
+  background: #fff;
+}
+
+ 
+.powerful-enterprise-section {
+  position: sticky;
+  top: 0;
+  padding: 60px 0;
+  background: #fff;
+  overflow: hidden;
+}
+
+ 
+.powerful-title-wrapper {
+  max-width: 1280px;
+  padding: 0 124px;
+  margin-bottom: 40px;
+}
+
+.powerful-enterprise-title {
+  font-size: 42px;
+  line-height: 54px;
+  font-weight: 500;
+  max-width: 600px;
+  letter-spacing: -1.5px;
+}
+
+.text-gradient {
+  background: linear-gradient(90deg, #4199EA 0%, #226EB4 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+ 
+.powerful-enterprise-carousel-container {
+  width: 100%;
+  overflow: hidden;
+}
+
+.powerful-enterprise-cards-track {
+  display: flex;
+  gap: 24px;
+  padding: 0 124px;
+  will-change: transform;
+}
+
+ 
+.powerful-card {
+  flex-shrink: 0;
+  width: 392px;
+  min-height: 490px;
+  background: #fff;
+  border: 1px solid #e9e9e9;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.powerful-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.powerful-card-header {
+  padding: 28px 26px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.powerful-card-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.powerful-card-icon {
+  flex-shrink: 0;
+}
+
+.powerful-card-icon img {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+}
+
+.powerful-card-body {
+  padding: 24px;
+  flex: 1;
+}
+
+.powerful-card-description {
+  font-size: 15px;
+  line-height: 26px;
+  color: #555;
+  margin: 0;
+}
+
+.powerful-card-link {
+  padding: 18px 24px;
+  border-top: 1px solid #f0f0f0;
+  text-decoration: none;
+  color: #4199EA;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: background-color 0.2s ease;
+}
+
+.powerful-card-link:hover {
+  background-color: #f8f9fa;
+}
+
+.powerful-card-link img {
+  width: 16px;
+  height: 16px;
+  transition: transform 0.2s ease;
+}
+
+.powerful-card-link:hover img {
+  transform: translateX(4px);
+}
+
+ 
+@media (max-width: 768px) {
+  .powerful-title-wrapper,
+  .powerful-enterprise-cards-track {
+    padding: 0 20px;
+  }
+  
+  .powerful-card {
+    width: 320px;
+    min-height: 420px;
+  }
+  
+  .powerful-enterprise-title {
+    font-size: 32px;
+    line-height: 42px;
+  }
+}
+
+ 
+.powerful-carousel-progress {
+  margin: 40px auto 0;
+  padding: 0 2%;
+}
+
+.progress-track {
+  height: 2px;
+  background: #e9e9e9;
+}
+
+.progress-bar {
+  height: 100%;
+  width: 0%;
+  background: #000;
+  transition: width 0.1s linear;
+}
+</style>
+</head>
+
+<body>
+
+<section class="spacer">Scroll Down</section>
+
+
+<section class="powerful-enterprise-wrapper">
+  <section class="powerful-enterprise-section">
+
+    <div class="powerful-title-wrapper">
+      <h2 class="powerful-enterprise-title">
+        Section Title
+      </h2>
+    </div>
+
+    <div class="powerful-enterprise-carousel-container">
+      <div class="powerful-enterprise-cards-track" id="cardsTrack" role="region" aria-label="Enterprise software features carousel">
+        <article class="powerful-card">
+          <header class="powerful-card-header">
+            <h3 class="powerful-card-title">Card Title</h3>
+            <div class="powerful-card-icon">
+              <img src="/erp/index/svgs/logooo.svg" alt="Card Title icon" loading="lazy">
+            </div>
+          </header>
+          <div class="powerful-card-body">
+            <p class="powerful-card-description">lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+          </div>
+          <a href="#core-financials" class="powerful-card-link" aria-label="Learn more about Card Title">
+            <span>Know more</span>
+            <img src="/erp/index/svgs/right-arrow.svg" alt="" loading="lazy">
+          </a>
+        </article>
+        <article class="powerful-card">
+          <header class="powerful-card-header">
+            <h3 class="powerful-card-title">Card Title</h3>
+            <div class="powerful-card-icon">
+              <img src="/erp/index/svgs/logooo.svg" alt="Card Title icon" loading="lazy">
+            </div>
+          </header>
+          <div class="powerful-card-body">
+            <p class="powerful-card-description">lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+          </div>
+          <a href="#supply-chain" class="powerful-card-link" aria-label="Learn more about Card Title">
+            <span>Know more</span>
+            <img src="/erp/index/svgs/right-arrow.svg" alt="" loading="lazy">
+          </a>
+        </article>
+        <article class="powerful-card">
+          <header class="powerful-card-header">
+            <h3 class="powerful-card-title">Card Title</h3>
+            <div class="powerful-card-icon">
+              <img src="/erp/index/svgs/logooo.svg" alt="Card Title icon" loading="lazy">
+            </div>
+          </header>
+          <div class="powerful-card-body">
+            <p class="powerful-card-description">lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+          </div>
+          <a href="#human-resources" class="powerful-card-link" aria-label="Learn more about Card Title">
+            <span>Know more</span>
+            <img src="/erp/index/svgs/right-arrow.svg" alt="" loading="lazy">
+          </a>
+        </article>
+        <article class="powerful-card">
+          <header class="powerful-card-header">
+            <h3 class="powerful-card-title">Card Title</h3>
+            <div class="powerful-card-icon">
+              <img src="/erp/index/svgs/logooo.svg" alt="Card Title icon" loading="lazy">
+            </div>
+          </header>
+          <div class="powerful-card-body">
+            <p class="powerful-card-description">lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+          </div>
+          <a href="#customer-relationship" class="powerful-card-link" aria-label="Learn more about Card Title">
+            <span>Know more</span>
+            <img src="/erp/index/svgs/right-arrow.svg" alt="" loading="lazy">
+          </a>
+        </article>
+        <article class="powerful-card">
+          <header class="powerful-card-header">
+            <h3 class="powerful-card-title">Card Title</h3>
+            <div class="powerful-card-icon">
+              <img src="/erp/index/svgs/logooo.svg" alt="Card Title icon" loading="lazy">
+            </div>
+          </header>
+          <div class="powerful-card-body">
+            <p class="powerful-card-description">lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+          </div>
+          <a href="#business-intelligence" class="powerful-card-link" aria-label="Learn more about Card Title">
+            <span>Know more</span>
+            <img src="/erp/index/svgs/right-arrow.svg" alt="" loading="lazy">
+          </a>
+        </article>
+        <article class="powerful-card">
+          <header class="powerful-card-header">
+            <h3 class="powerful-card-title">Card Title</h3>
+            <div class="powerful-card-icon">
+              <img src="/erp/index/svgs/logooo.svg" alt="Card Title icon" loading="lazy">
+            </div>
+          </header>
+          <div class="powerful-card-body">
+            <p class="powerful-card-description">lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+          </div>
+          <a href="#project-management" class="powerful-card-link" aria-label="Learn more about Card Title">
+            <span>Know more</span>
+            <img src="/erp/index/svgs/right-arrow.svg" alt="" loading="lazy">
+          </a>
+        </article>
+        <article class="powerful-card">
+          <header class="powerful-card-header">
+            <h3 class="powerful-card-title">Card Title</h3>
+            <div class="powerful-card-icon">
+              <img src="/erp/index/svgs/logooo.svg" alt="Card Title icon" loading="lazy">
+            </div>
+          </header>
+          <div class="powerful-card-body">
+            <p class="powerful-card-description">lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+          </div>
+          <a href="#manufacturing" class="powerful-card-link" aria-label="Learn more about Card Title">
+            <span>Know more</span>
+            <img src="/erp/index/svgs/right-arrow.svg" alt="" loading="lazy">
+          </a>
+        </article>
+        <article class="powerful-card">
+          <header class="powerful-card-header">
+            <h3 class="powerful-card-title">Card Title</h3>
+            <div class="powerful-card-icon">
+              <img src="/erp/index/svgs/logooo.svg" alt="Card Title icon" loading="lazy">
+            </div>
+          </header>
+          <div class="powerful-card-body">
+            <p class="powerful-card-description">lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+          </div>
+          <a href="#sales-automation" class="powerful-card-link" aria-label="Learn more about Card Title">
+            <span>Know more</span>
+            <img src="/erp/index/svgs/right-arrow.svg" alt="" loading="lazy">
+          </a>
+        </article>
+      </div>
+    </div>
+
+    <div class="powerful-carousel-progress">
+      <div class="progress-track">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+    </div>
+
+  </section>
+</section>
+
+<section class="spacer">Next Section</section>
+
+<script>
+ 
+const wrapper = document.querySelector('.powerful-enterprise-wrapper');
+const track = document.getElementById('cardsTrack');
+const progressBar = document.getElementById('progressBar');
+
+ 
+let maxTranslate = 0;
+let ticking = false;
+
+function calculateDimensions() {
+  const trackWidth = track.scrollWidth;
+  const containerWidth = track.parentElement.offsetWidth;
+  maxTranslate = Math.max(0, trackWidth - containerWidth);
+}
+
+function updateCarousel() {
+  const rect = wrapper.getBoundingClientRect();
+  const scrollable = rect.height - window.innerHeight;
+
+  
+  if (rect.top > 0 || rect.bottom < window.innerHeight) {
+    ticking = false;
+    return;
+  }
+
+  const progress = Math.min(1, Math.max(0, Math.abs(rect.top) / scrollable));
+  const translateX = progress * maxTranslate;
+  
+  
+  track.style.transform = `translate3d(${-translateX}px, 0, 0)`;
+  progressBar.style.width = `${progress * 100}%`;
+  
+  ticking = false;
+}
+
+function onScroll() {
+  if (!ticking) {
+    requestAnimationFrame(updateCarousel);
+    ticking = true;
+  }
+}
+
+function onResize() {
+  calculateDimensions();
+}
+
+ 
+function init() {
+  calculateDimensions();
+  
+  
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onResize, { passive: true });
+}
+
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}
+</script>
+
+</body>
+</html>
