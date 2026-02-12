@@ -23,10 +23,10 @@ prompts:
       - title: "CSS Architecture"
         prompt: "Refactor this CSS file using BEM naming convention. Identify repeated values and extract them into CSS custom properties. Remove any unused selectors, reduce specificity issues, and organize rules by component."
 
-  - category: "JavaScript"
+  - category: "JS"
     items:
       - title: "Debounce & Throttle"
-        prompt: "Write a production-ready debounce and throttle utility in vanilla JavaScript with TypeScript types. Include options for leading/trailing edge execution, cancel method, and flush method. Add JSDoc comments and unit test cases."
+        prompt: "Write a production-ready debounce and throttle utility in vanilla JS with TypeScript types. Include options for leading/trailing edge execution, cancel method, and flush method. Add JSDoc comments and unit test cases."
       - title: "Fetch Wrapper"
         prompt: "Create a reusable fetch API wrapper that handles: automatic JSON parsing, request/response interceptors, timeout support, retry logic with exponential backoff, abort controller integration, and typed error handling. Use TypeScript."
       - title: "Form Validation"
