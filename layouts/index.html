@@ -3,16 +3,414 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Components</title>
+    <title>{{ .Site.Title }}</title>
+    <style>
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+        :root{
+            --accent:#3b82f6;
+            --accent-light:#60a5fa;
+            --accent-dark:#1d4ed8;
+            --glass:rgba(255,255,255,.05);
+            --glass-strong:rgba(255,255,255,.08);
+            --glass-border:rgba(255,255,255,.12);
+            --glass-border-strong:rgba(255,255,255,.18);
+            --glass-shine:rgba(255,255,255,.15);
+            --text:#f0f4ff;
+            --text-muted:#8b9cc7;
+            --radius:18px;
+            --ease:0.3s cubic-bezier(.4,0,.2,1);
+        }
+
+        body{
+            font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+            min-height:100vh;
+            color:var(--text);
+            line-height:1.6;
+            background:#050a18;
+            overflow-x:hidden;
+        }
+
+        /* Layered background */
+        .bg{
+            position:fixed;inset:0;z-index:0;
+            background:
+                radial-gradient(ellipse 70% 50% at 50% 0%,rgba(59,130,246,.2),transparent 70%),
+                radial-gradient(ellipse 50% 60% at 100% 100%,rgba(37,99,235,.12),transparent 70%),
+                radial-gradient(ellipse 40% 40% at 0% 60%,rgba(96,165,250,.08),transparent 60%);
+        }
+
+        /* Animated orbs */
+        .orb{
+            position:fixed;
+            border-radius:50%;
+            filter:blur(120px);
+            pointer-events:none;
+            z-index:0;
+            animation:drift 25s ease-in-out infinite alternate;
+        }
+        .orb--1{width:600px;height:600px;background:rgba(59,130,246,.2);top:-15%;left:-10%}
+        .orb--2{width:450px;height:450px;background:rgba(37,99,235,.15);bottom:-10%;right:-8%;animation-delay:-12s}
+        .orb--3{width:300px;height:300px;background:rgba(96,165,250,.1);top:40%;left:50%;animation-delay:-6s}
+        @keyframes drift{
+            0%{transform:translate(0,0) scale(1)}
+            50%{transform:translate(30px,-20px) scale(1.05)}
+            100%{transform:translate(-20px,30px) scale(.95)}
+        }
+
+        /* Noise overlay */
+        .noise{
+            position:fixed;inset:0;z-index:0;
+            opacity:.03;
+            background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+            pointer-events:none;
+        }
+
+        .wrapper{
+            position:relative;
+            z-index:1;
+            max-width:1040px;
+            margin:0 auto;
+            padding:3.5rem 1.5rem 5rem;
+        }
+
+        /* Header glass panel */
+        .header{
+            text-align:center;
+            margin-bottom:2.5rem;
+            padding:2.5rem 2rem 2rem;
+            background:var(--glass);
+            border:1px solid var(--glass-border);
+            border-radius:24px;
+            backdrop-filter:blur(24px) saturate(1.4);
+            -webkit-backdrop-filter:blur(24px) saturate(1.4);
+            position:relative;
+            overflow:hidden;
+        }
+        .header::before{
+            content:'';position:absolute;top:0;left:0;right:0;height:1px;
+            background:linear-gradient(90deg,transparent,var(--glass-shine),transparent);
+        }
+        .header h1{
+            font-size:2.5rem;
+            font-weight:800;
+            letter-spacing:-.03em;
+            background:linear-gradient(135deg,#fff 25%,var(--accent-light) 75%);
+            -webkit-background-clip:text;
+            -webkit-text-fill-color:transparent;
+            background-clip:text;
+        }
+        .header p{
+            color:var(--text-muted);
+            margin-top:.35rem;
+            font-size:1rem;
+        }
+
+        /* Search inside header */
+        .search-wrap{
+            max-width:400px;
+            margin:1.25rem auto 0;
+            position:relative;
+        }
+        .search-wrap svg{
+            position:absolute;left:14px;top:50%;
+            transform:translateY(-50%);
+            color:var(--text-muted);
+            pointer-events:none;
+        }
+        .search-input{
+            width:100%;
+            padding:.65rem 1rem .65rem 2.5rem;
+            border:1px solid var(--glass-border-strong);
+            border-radius:12px;
+            background:rgba(255,255,255,.04);
+            backdrop-filter:blur(8px);
+            -webkit-backdrop-filter:blur(8px);
+            color:var(--text);
+            font-size:.9rem;
+            outline:none;
+            transition:border var(--ease),box-shadow var(--ease),background var(--ease);
+        }
+        .search-input::placeholder{color:var(--text-muted)}
+        .search-input:focus{
+            border-color:var(--accent);
+            background:rgba(59,130,246,.06);
+            box-shadow:0 0 0 3px rgba(59,130,246,.15),0 0 20px rgba(59,130,246,.08);
+        }
+
+        /* Section */
+        .section{margin-bottom:2.5rem}
+        .section-title{
+            display:inline-flex;
+            align-items:center;
+            gap:.5rem;
+            font-size:.75rem;
+            font-weight:700;
+            text-transform:uppercase;
+            letter-spacing:.1em;
+            color:var(--accent-light);
+            margin-bottom:1rem;
+            padding-left:.15rem;
+        }
+        .section-title::before{
+            content:'';
+            width:3px;height:14px;
+            border-radius:2px;
+            background:var(--accent);
+            box-shadow:0 0 8px rgba(59,130,246,.4);
+        }
+        .badge{
+            display:inline-block;
+            font-size:.6rem;font-weight:600;
+            text-transform:uppercase;letter-spacing:.06em;
+            padding:.15rem .45rem;border-radius:6px;
+            margin-left:.35rem;vertical-align:middle;
+            background:rgba(59,130,246,.12);
+            color:var(--accent-light);
+            border:1px solid rgba(59,130,246,.15);
+        }
+
+        /* Grid */
+        .grid{
+            display:grid;
+            grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+            gap:1rem;
+        }
+
+        /* Glass Card */
+        .card{
+            position:relative;
+            display:flex;
+            align-items:center;
+            gap:1rem;
+            padding:1.25rem 1.3rem;
+            background:var(--glass);
+            border:1px solid var(--glass-border);
+            border-radius:var(--radius);
+            backdrop-filter:blur(20px) saturate(1.3);
+            -webkit-backdrop-filter:blur(20px) saturate(1.3);
+            text-decoration:none;
+            color:var(--text);
+            transition:all var(--ease);
+            overflow:hidden;
+        }
+        /* Top shine line */
+        .card::before{
+            content:'';
+            position:absolute;
+            top:0;left:0;right:0;height:1px;
+            background:linear-gradient(90deg,transparent 10%,var(--glass-shine) 50%,transparent 90%);
+            opacity:.6;
+            transition:opacity var(--ease);
+        }
+        /* Blue gradient overlay on hover */
+        .card::after{
+            content:'';
+            position:absolute;inset:0;
+            border-radius:var(--radius);
+            background:linear-gradient(135deg,rgba(59,130,246,.1),rgba(59,130,246,.02) 50%,transparent);
+            opacity:0;
+            transition:opacity var(--ease);
+            pointer-events:none;
+        }
+        .card:hover,.card:focus-visible{
+            background:var(--glass-strong);
+            border-color:var(--glass-border-strong);
+            transform:translateY(-3px);
+            box-shadow:
+                0 8px 32px rgba(59,130,246,.12),
+                0 2px 8px rgba(0,0,0,.25),
+                inset 0 1px 0 var(--glass-shine);
+        }
+        .card:hover::before{opacity:1}
+        .card:hover::after,.card:focus-visible::after{opacity:1}
+        .card:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+        .card-icon{
+            position:relative;z-index:1;
+            flex-shrink:0;
+            width:44px;height:44px;
+            display:flex;align-items:center;justify-content:center;
+            border-radius:12px;
+            background:rgba(59,130,246,.1);
+            border:1px solid rgba(59,130,246,.15);
+            color:var(--accent-light);
+            backdrop-filter:blur(6px);
+            -webkit-backdrop-filter:blur(6px);
+        }
+        .card-body{position:relative;z-index:1;min-width:0}
+        .card-body h3{
+            font-size:.93rem;
+            font-weight:600;
+            margin-bottom:.1rem;
+            letter-spacing:-.01em;
+            white-space:nowrap;
+            overflow:hidden;
+            text-overflow:ellipsis;
+        }
+        .card-body p{
+            font-size:.78rem;
+            color:var(--text-muted);
+            line-height:1.4;
+            display:-webkit-box;
+            -webkit-line-clamp:2;
+            line-clamp:2;
+            -webkit-box-orient:vertical;
+            overflow:hidden;
+        }
+
+        /* Arrow indicator */
+        .card-arrow{
+            position:relative;z-index:1;
+            margin-left:auto;
+            flex-shrink:0;
+            color:var(--text-muted);
+            transition:color var(--ease),transform var(--ease);
+        }
+        .card:hover .card-arrow{
+            color:var(--accent-light);
+            transform:translateX(3px);
+        }
+
+        /* Empty state */
+        .no-results{
+            display:none;
+            text-align:center;
+            padding:3rem 1rem;
+            color:var(--text-muted);
+            font-size:.95rem;
+        }
+        .no-results.visible{display:block}
+
+        /* Footer */
+        .footer{
+            text-align:center;
+            margin-top:2rem;
+            padding-top:1.5rem;
+            border-top:1px solid var(--glass-border);
+            color:var(--text-muted);
+            font-size:.75rem;
+        }
+
+        @media(max-width:600px){
+            .wrapper{padding:2rem 1rem 3rem}
+            .header{padding:1.75rem 1.25rem 1.5rem;border-radius:18px}
+            .header h1{font-size:1.7rem}
+            .grid{grid-template-columns:1fr}
+        }
+    </style>
 </head>
 <body>
-    <h1>Components</h1>
-    <ul>
-        <li><a href="/pages/prompts/">AI Prompts</a></li>
-        <li><a href="/api/cities/">Indian Cities API</a></li>
-        <li><a href="/components/carousel/type1/">Carousel Type 1</a></li>
-        <li><a href="/components/carousel/type2/">Carousel Type 2</a></li>
-        <li><a href="/components/carousel/type3/">Carousel Type 3</a></li>
-    </ul>
+    <div class="bg" aria-hidden="true"></div>
+    <div class="orb orb--1" aria-hidden="true"></div>
+    <div class="orb orb--2" aria-hidden="true"></div>
+    <div class="orb orb--3" aria-hidden="true"></div>
+    <div class="noise" aria-hidden="true"></div>
+
+    <main class="wrapper" role="main">
+        <header class="header">
+            <h1>{{ .Site.Title }}</h1>
+            <p>Browse and preview reusable components, pages &amp; APIs</p>
+
+            <div class="search-wrap">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                     aria-hidden="true">
+                    <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
+                </svg>
+                <label for="search" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)">Search components</label>
+                <input id="search" class="search-input" type="search" placeholder="Search…"
+                       aria-label="Search components" autocomplete="off">
+            </div>
+        </header>
+
+        {{/* ── Collect pages by category from the "type" front matter ── */}}
+        {{ $components := slice }}
+        {{ $pages := slice }}
+        {{ $apis := slice }}
+
+        {{ range .Site.RegularPages }}
+            {{ $type := .Params.type | default "" }}
+            {{ if hasPrefix $type "components" }}
+                {{ $components = $components | append . }}
+            {{ else if hasPrefix $type "pages" }}
+                {{ $pages = $pages | append . }}
+            {{ else if hasPrefix $type "api" }}
+                {{ $apis = $apis | append . }}
+            {{ end }}
+        {{ end }}
+
+        {{/* ── Components Section ── */}}
+        {{ with $components }}
+        <section class="section" aria-label="Components">
+            <h2 class="section-title">Components <span class="badge">{{ len $components }}</span></h2>
+            <div class="grid">
+                {{ range . }}
+                <a href="{{ .Permalink }}" class="card" data-name="{{ .Title | lower }}" aria-label="{{ .Title }}">
+                    <span class="card-icon" aria-hidden="true">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/></svg>
+                    </span>
+                    <div class="card-body">
+                        <h3>{{ .Title }}</h3>
+                        {{ with .Params.description }}<p>{{ . }}</p>{{ end }}
+                    </div>
+                    <svg class="card-arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+                </a>
+                {{ end }}
+            </div>
+        </section>
+        {{ end }}
+
+        {{/* ── Pages Section ── */}}
+        {{ with $pages }}
+        <section class="section" aria-label="Pages">
+            <h2 class="section-title">Pages <span class="badge">{{ len $pages }}</span></h2>
+            <div class="grid">
+                {{ range . }}
+                <a href="{{ .Permalink }}" class="card" data-name="{{ .Title | lower }}" aria-label="{{ .Title }}">
+                    <span class="card-icon" aria-hidden="true">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
+                    </span>
+                    <div class="card-body">
+                        <h3>{{ .Title }}</h3>
+                        {{ with .Params.description }}<p>{{ . }}</p>{{ end }}
+                    </div>
+                    <svg class="card-arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+                </a>
+                {{ end }}
+            </div>
+        </section>
+        {{ end }}
+
+        <p class="no-results" role="status" aria-live="polite">No components found matching your search.</p>
+
+        <footer class="footer" role="contentinfo">
+            <p>{{ .Site.Title }}</p>
+        </footer>
+    </main>
+
+    <script>
+        const input = document.getElementById('search');
+        const cards = document.querySelectorAll('.card');
+        const sections = document.querySelectorAll('.section');
+        const noResults = document.querySelector('.no-results');
+
+        input.addEventListener('input', () => {
+            const q = input.value.toLowerCase().trim();
+            let visible = 0;
+
+            cards.forEach(card => {
+                const match = card.dataset.name.includes(q);
+                card.style.display = match ? '' : 'none';
+                if (match) visible++;
+            });
+
+            sections.forEach(sec => {
+                const hasVisible = [...sec.querySelectorAll('.card')].some(c => c.style.display !== 'none');
+                sec.style.display = hasVisible ? '' : 'none';
+            });
+
+            noResults.classList.toggle('visible', visible === 0);
+        });
+    </script>
 </body>
 </html>

@@ -3,3 +3,18 @@ languageCode: en-us
 title: Web Components
 relativeURLs: false
 canonifyURLs: true
+MetaDataFormat: "yaml"
+contentdir: "content"
+layoutdir: "layouts"
+publishdir: "public"
+assetsdir: "assets"
+uglyURLs: true
+disableKinds: ["rss","sitemap","term","section"]
+markup:
+  goldmark:
+    renderer:
+      unsafe: true
+    extensions:
+      typographer:
+        disable: true
+watch: false
