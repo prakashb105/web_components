@@ -1,3 +1,5 @@
-baseURL: https://example.org/
+baseURL: "https://prakashb105.github.io/"
 languageCode: en-us
-title: My New Hugo Site
+title: Web Components
+relativeURLs: false
+canonifyURLs: true
